@@ -5,16 +5,28 @@ const Stars = () => {
     const [stars, setStars] = useState([]);
 
     useEffect(() => {
-        const starCount = 150;
-        const newStars = Array.from({ length: starCount }).map((_, i) => ({
-            id: i,
-            x: Math.random() * 100,
-            y: Math.random() * 100,
-            size: Math.random() * 2 + 1,
-            opacity: Math.random() * 0.5 + 0.3,
-            duration: Math.random() * 50 + 50, // Slow drift duration
-        }));
-        setStars(newStars);
+        const layers = [
+            // Far layer: tiny, dim, very slow
+            { count: 80, sizeMin: 0.8, sizeMax: 1.5, opMin: 0.15, opMax: 0.35, speedMin: 80, speedMax: 120 },
+            // Mid layer: medium size and speed
+            { count: 50, sizeMin: 1.5, sizeMax: 2.5, opMin: 0.35, opMax: 0.65, speedMin: 40, speedMax: 70 },
+            // Near layer: large, bright, fast
+            { count: 20, sizeMin: 2.5, sizeMax: 4, opMin: 0.55, opMax: 1.0, speedMin: 20, speedMax: 40 },
+        ];
+
+        let id = 0;
+        const allStars = layers.flatMap((layer, layerIdx) =>
+            Array.from({ length: layer.count }).map(() => ({
+                id: id++,
+                layer: layerIdx,
+                x: Math.random() * 100,
+                y: Math.random() * 100,
+                size: layer.sizeMin + Math.random() * (layer.sizeMax - layer.sizeMin),
+                opacity: layer.opMin + Math.random() * (layer.opMax - layer.opMin),
+                duration: layer.speedMin + Math.random() * (layer.speedMax - layer.speedMin),
+            }))
+        );
+        setStars(allStars);
     }, []);
 
     return (
@@ -28,12 +40,12 @@ const Stars = () => {
                         top: `${star.y}%`,
                         width: star.size,
                         height: star.size,
-                        boxShadow: `0 0 ${star.size * 2}px rgba(255,255,255,0.8)`,
+                        boxShadow: `0 0 ${star.size * 2}px rgba(255,255,255,${star.layer === 2 ? 0.9 : star.layer === 1 ? 0.6 : 0.3})`,
                     }}
                     animate={{
-                        opacity: [star.opacity, 1, star.opacity],
-                        x: ["-10vw", "100vw"], // Drift across screen
-                        y: ["-10vh", "100vh"], // Drift down
+                        opacity: [star.opacity, star.opacity + 0.2, star.opacity],
+                        x: ["-10vw", "100vw"],
+                        y: ["-10vh", "100vh"],
                     }}
                     transition={{
                         opacity: {
@@ -56,6 +68,7 @@ const Stars = () => {
                     }}
                 />
             ))}
+            {/* Shooting Star */}
             <motion.div
                 className="absolute top-0 right-0 w-[200px] h-[2px] bg-gradient-to-l from-transparent via-white to-transparent"
                 animate={{

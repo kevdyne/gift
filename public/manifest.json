@@ -1,0 +1,17 @@
+{
+    "name": "lil-sumn 💜",
+    "short_name": "lil-sumn",
+    "description": "A special gift for a special person",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#050510",
+    "theme_color": "#050510",
+    "icons": [
+        {
+            "src": "/heart-icon.svg",
+            "sizes": "any",
+            "type": "image/svg+xml",
+            "purpose": "any maskable"
+        }
+    ]
+}
